@@ -1,3 +1,5 @@
+// Routing
+// Magic things happen here!
 package routes
 
 import (

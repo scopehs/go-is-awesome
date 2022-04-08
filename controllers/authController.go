@@ -1,3 +1,5 @@
+// Auth Controller
+// Register/Login and all that good stuff.
 package controllers
 
 import (
@@ -11,7 +13,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-// Well hello there!
+// Register Function
 func Register(c *fiber.Ctx) error {
 
 	var data map[string]string
