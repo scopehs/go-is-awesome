@@ -6,8 +6,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/dgrijalva/jwt-go"
 	"github.com/gofiber/fiber/v2"
+	"github.com/golang-jwt/jwt"
 	"github.com/scopehs/tutorial/database"
 	"github.com/scopehs/tutorial/models"
 	"golang.org/x/crypto/bcrypt"
@@ -76,7 +76,7 @@ func Login(c *fiber.Ctx) error {
 		ExpiresAt: time.Now().Add(time.Hour * 24).Unix(), // 1 day JWT expire
 	})
 
-	token, err := claims.SigningString()
+	token, err := claims.SignedString([]byte("secret"))
 
 	if err != nil {
 		return c.SendStatus(fiber.StatusInternalServerError)
@@ -94,4 +94,30 @@ func Login(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{
 		"message": "success",
 	})
+}
+
+type Claims struct {
+	jwt.StandardClaims
+}
+
+func User(c *fiber.Ctx) error {
+	// Get the Cookie!
+	cookie := c.Cookies("jwt")
+
+	// Get the Token!
+	token, err := jwt.ParseWithClaims(cookie, &Claims{}, func(t *jwt.Token) (interface{}, error) {
+		return []byte("secret"), nil
+	})
+
+	if err != nil || token.Valid {
+		c.Status(fiber.StatusUnauthorized)
+		println(&err)
+		return c.JSON(fiber.Map{
+			"message": "unauthenticated",
+		})
+	}
+
+	claims := token.Claims
+
+	return c.JSON(claims)
 }

@@ -3,8 +3,8 @@ module github.com/scopehs/tutorial
 go 1.17
 
 require (
-	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gofiber/fiber/v2 v2.31.0
+	github.com/golang-jwt/jwt v3.2.2+incompatible
 	golang.org/x/crypto v0.0.0-20220331220935-ae2d96664a29
 	gorm.io/driver/mysql v1.3.3
 	gorm.io/gorm v1.23.4
