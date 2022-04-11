@@ -105,19 +105,54 @@ func User(c *fiber.Ctx) error {
 	cookie := c.Cookies("jwt")
 
 	// Get the Token!
-	token, err := jwt.ParseWithClaims(cookie, &Claims{}, func(t *jwt.Token) (interface{}, error) {
+	token, err := jwt.ParseWithClaims(cookie, &Claims{}, func(token *jwt.Token) (interface{}, error) {
 		return []byte("secret"), nil
 	})
 
-	if err != nil || token.Valid {
+	if err != nil || !token.Valid {
 		c.Status(fiber.StatusUnauthorized)
-		println(&err)
+
 		return c.JSON(fiber.Map{
 			"message": "unauthenticated",
 		})
 	}
 
-	claims := token.Claims
+	// Returns Claims & Issuer ID
+	// claims := token.Claims
 
-	return c.JSON(claims)
+	/*
+		{
+			"exp": 1649788810,
+			"iss": "2"
+		}
+	*/
+
+	// Casting .(*Claims) to use Struct - this enables a user id return.
+	claims := token.Claims.(*Claims)
+
+	// Declare a varaiable as User struct
+	var user models.User
+
+	// Create a database query to find the user and point the result into user
+	database.DB.Where("id = ?", claims.Issuer).First(&user)
+
+	// Return user
+	return c.JSON(user)
+}
+
+// Logout, by adding a new cookie with no value and -1 Hour from now.
+func Logout(c *fiber.Ctx) error {
+
+	cookie := fiber.Cookie{
+		Name:     "jwt",
+		Value:    "",
+		Expires:  time.Now().Add(-time.Hour),
+		HTTPOnly: true,
+	}
+
+	c.Cookie(&cookie)
+
+	return c.JSON(fiber.Map{
+		"message": "success",
+	})
 }

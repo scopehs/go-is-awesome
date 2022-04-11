@@ -12,7 +12,7 @@ var DB *gorm.DB
 // Connect opens a connection to the database
 // Panics if cannot connect.
 func Connect() {
-	database, err := gorm.Open(mysql.Open("root:ipce@/go_admin"), &gorm.Config{})
+	database, err := gorm.Open(mysql.Open("root:tut@/go_admin"), &gorm.Config{})
 
 	if err != nil {
 		panic("Could not connect to the database")
