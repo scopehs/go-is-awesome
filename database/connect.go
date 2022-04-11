@@ -25,5 +25,6 @@ func Connect() {
 		&models.User{},
 		&models.Role{},
 		&models.Permission{},
+		&models.Product{},
 	)
 }
