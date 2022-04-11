@@ -6,7 +6,7 @@ import (
 	"github.com/scopehs/tutorial/models"
 )
 
-func AllRPermissions(c *fiber.Ctx) error {
+func AllPermissions(c *fiber.Ctx) error {
 	var permissions []models.Permission
 
 	database.DB.Find(&permissions)
