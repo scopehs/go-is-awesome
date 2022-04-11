@@ -10,7 +10,7 @@ import (
 	"github.com/golang-jwt/jwt"
 	"github.com/scopehs/tutorial/database"
 	"github.com/scopehs/tutorial/models"
-	"golang.org/x/crypto/bcrypt"
+	"github.com/scopehs/tutorial/util"
 )
 
 // Register Function
@@ -29,14 +29,13 @@ func Register(c *fiber.Ctx) error {
 		})
 	}
 
-	password, _ := bcrypt.GenerateFromPassword([]byte(data["password"]), 14)
-
 	user := models.User{
 		FirstName: data["first_name"],
 		LastName:  data["last_name"],
 		Email:     data["email"],
-		Password:  password,
 	}
+
+	user.SetPassword(data["password"])
 
 	database.DB.Create(&user)
 
@@ -63,7 +62,7 @@ func Login(c *fiber.Ctx) error {
 		})
 	}
 
-	if err := bcrypt.CompareHashAndPassword(user.Password, []byte(data["password"])); err != nil {
+	if err := user.ComparePassword(data["password"]); err != nil {
 		c.Status(400)
 		return c.JSON(fiber.Map{
 			"message": "incorrect password",
@@ -71,12 +70,8 @@ func Login(c *fiber.Ctx) error {
 
 	}
 
-	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{
-		Issuer:    strconv.Itoa(int(user.Id)),
-		ExpiresAt: time.Now().Add(time.Hour * 24).Unix(), // 1 day JWT expire
-	})
-
-	token, err := claims.SignedString([]byte("secret"))
+	// Generate a JWT Token based on User ID
+	token, err := util.GenerateJwt(strconv.Itoa(int(user.Id)))
 
 	if err != nil {
 		return c.SendStatus(fiber.StatusInternalServerError)
@@ -104,37 +99,14 @@ func User(c *fiber.Ctx) error {
 	// Get the Cookie!
 	cookie := c.Cookies("jwt")
 
-	// Get the Token!
-	token, err := jwt.ParseWithClaims(cookie, &Claims{}, func(token *jwt.Token) (interface{}, error) {
-		return []byte("secret"), nil
-	})
-
-	if err != nil || !token.Valid {
-		c.Status(fiber.StatusUnauthorized)
-
-		return c.JSON(fiber.Map{
-			"message": "unauthenticated",
-		})
-	}
-
-	// Returns Claims & Issuer ID
-	// claims := token.Claims
-
-	/*
-		{
-			"exp": 1649788810,
-			"iss": "2"
-		}
-	*/
-
-	// Casting .(*Claims) to use Struct - this enables a user id return.
-	claims := token.Claims.(*Claims)
+	// Parses the JWT/Cookie
+	id, _ := util.ParseJWT(cookie)
 
 	// Declare a varaiable as User struct
 	var user models.User
 
 	// Create a database query to find the user and point the result into user
-	database.DB.Where("id = ?", claims.Issuer).First(&user)
+	database.DB.Where("id = ?", id).First(&user)
 
 	// Return user
 	return c.JSON(user)
