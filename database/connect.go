@@ -21,5 +21,9 @@ func Connect() {
 	DB = database
 
 	// Auto migrate User Model.
-	database.AutoMigrate(&models.User{})
+	database.AutoMigrate(
+		&models.User{},
+		&models.Role{},
+		&models.Permission{},
+	)
 }
