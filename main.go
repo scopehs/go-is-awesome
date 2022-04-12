@@ -4,6 +4,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/scopehs/tutorial/database"
+	"github.com/scopehs/tutorial/esi"
 	"github.com/scopehs/tutorial/routes"
 )
 
@@ -24,6 +25,8 @@ func main() {
 	// Make routes
 	routes.Setup(app)
 
+	esi.MarketPrices()
+
 	// Start Server
-	app.Listen(":4444")
+	//app.Listen(":4444")
 }

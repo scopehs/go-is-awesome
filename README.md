@@ -11,3 +11,7 @@ docker-compose up - # this will start the sql server!
 
 Use `air` for live reloading during dev
 
+# Front End
+
+npm start
+

@@ -28,5 +28,6 @@ func Connect() {
 		&models.Product{},
 		&models.Order{},
 		&models.OrderItem{},
+		&models.MarkerPrices{},
 	)
 }
