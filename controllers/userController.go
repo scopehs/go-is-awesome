@@ -5,10 +5,16 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/scopehs/tutorial/database"
+	"github.com/scopehs/tutorial/middleware"
 	"github.com/scopehs/tutorial/models"
 )
 
 func AllUsers(c *fiber.Ctx) error {
+
+	if err := middleware.IsAuthorized(c, "users"); err != nil {
+		return err
+	}
+
 	page, _ := strconv.Atoi(c.Query("page", "1"))
 
 	return c.JSON(models.Paginate(database.DB, &models.User{}, page))
