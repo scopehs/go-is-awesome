@@ -1,11 +1,11 @@
 module github.com/scopehs/tutorial
 
-go 1.17
+go 1.18
 
 require (
 	github.com/gofiber/fiber/v2 v2.31.0
 	github.com/golang-jwt/jwt v3.2.2+incompatible
-	golang.org/x/crypto v0.0.0-20220331220935-ae2d96664a29
+	golang.org/x/crypto v0.0.0-20220411220226-7b82a4e95df4
 	gorm.io/driver/mysql v1.3.3
 	gorm.io/gorm v1.23.4
 )
