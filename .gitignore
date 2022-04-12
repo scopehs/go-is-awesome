@@ -1,4 +1,4 @@
 tmp/
 *.exe
-uploads/*
-csv/*
+uploads/*.*
+csv/*.*
